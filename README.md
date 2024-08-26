@@ -2,7 +2,7 @@
 
 ## Introduction
 
-A simple and opinionated library contains base classes, interfaces, and traits for building APIs using Laravel
+A simple and opinionated library contains base classes, interfaces, traits, and templates for building APIs using Laravel
 
 ## Inspiration
 

@@ -1,16 +1,19 @@
 # Laravel Simple Extendables
 
-## Introduction
+## About
 
 A simple and opinionated library contains base classes, interfaces, traits, and templates for building APIs using Laravel
 
 ## Inspiration
 
-- [Laravel beyond CRUD: Domain oriented Laravel](https://stitcher.io/blog/laravel-beyond-crud-01-domain-oriented-laravel)
-- [Laravel beyond CRUD: Actions](https://stitcher.io/blog/laravel-beyond-crud-03-actions)
-- [Laravel beyond CRUD: Models / Models != business logic](https://stitcher.io/blog/laravel-beyond-crud-04-models#models-%E2%89%A0-business-logic)
+- [Laravel beyond CRUD: Domain oriented Laravel](https://online.fliphtml5.com/pbudi/dfap/#p=6)
+- [Laravel beyond CRUD: Working with data](https://online.fliphtml5.com/pbudi/dfap/#p=6)
+- [Laravel beyond CRUD: Actions](https://online.fliphtml5.com/pbudi/dfap/#p=6)
+- [Laravel beyond CRUD: Models](https://online.fliphtml5.com/pbudi/dfap/#p=6)
+- [Laravel beyond CRUD: Testing domains](https://online.fliphtml5.com/pbudi/dfap/#p=7)
 - [Effective Eloquent queries](https://laravel-news.com/effective-eloquent)
 - [JSON API specification's query string format](https://jsonapi.org/format/#fetching)
+- [State machines in Laravel](https://www.youtube.com/watch?v=1A1xFtlDyzU)
 
 ## System requirement
 

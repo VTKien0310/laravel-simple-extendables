@@ -1,12 +1,12 @@
 ## Project specification
 
-- Laravel 10
+- Laravel 11
 - Composer 2
 - Timezone: UTC
 
 ## System requirement
 
-- PHP 8.1
+- PHP 8.2
 - Postgres 15.2
 - Redis 6
 
@@ -17,8 +17,8 @@
 
 ## Dependencies
 
-- [Laravel Sanctum for authentication](https://laravel.com/docs/9.x/sanctum)
-- [Laravel Horizon for queue management](https://laravel.com/docs/9.x/horizon)
+- [Laravel Sanctum for authentication](https://laravel.com/docs/11.x/sanctum)
+- [Laravel Horizon for queue management](https://laravel.com/docs/11.x/horizon)
 - [Laravel Telescope for debugging](https://laravel.com/docs/11.x/telescope)
 - [PEST for testing](https://pestphp.com/)
 
@@ -26,9 +26,11 @@
 
 ### Inspiration
 
-- [Laravel beyond CRUD: Domain oriented Laravel](https://stitcher.io/blog/laravel-beyond-crud-01-domain-oriented-laravel)
-- [Laravel beyond CRUD: Actions](https://stitcher.io/blog/laravel-beyond-crud-03-actions)
-- [Laravel beyond CRUD: Models / Models != business logic](https://stitcher.io/blog/laravel-beyond-crud-04-models#models-%E2%89%A0-business-logic)
+- [Laravel beyond CRUD: Domain oriented Laravel](https://online.fliphtml5.com/pbudi/dfap/#p=6)
+- [Laravel beyond CRUD: Working with data](https://online.fliphtml5.com/pbudi/dfap/#p=6)
+- [Laravel beyond CRUD: Actions](https://online.fliphtml5.com/pbudi/dfap/#p=6)
+- [Laravel beyond CRUD: Models](https://online.fliphtml5.com/pbudi/dfap/#p=6)
+- [Laravel beyond CRUD: Testing domains](https://online.fliphtml5.com/pbudi/dfap/#p=7)
 - [Effective Eloquent queries](https://laravel-news.com/effective-eloquent)
 - [JSON API specification's query string format](https://jsonapi.org/format/#fetching)
 - [State machines in Laravel](https://www.youtube.com/watch?v=1A1xFtlDyzU)
@@ -122,7 +124,7 @@ php artisan optimize
 #### Start Laravel Horizon in background
 
 For production environment, please follow
-the [official documentation](https://laravel.com/docs/10.x/horizon#deploying-horizon).
+the [official documentation](https://laravel.com/docs/11.x/horizon#deploying-horizon).
 For local development environment, you can start Horizon in background:
 
 ```

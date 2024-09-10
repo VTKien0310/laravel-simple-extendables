@@ -13,6 +13,7 @@
 ## Drivers and engines
 
 - Queue driver: Redis
+- Cache driver: Redis
 - Storage: Amazon S3
 
 ## Dependencies

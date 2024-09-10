@@ -110,7 +110,6 @@ Important fields:
 - AWS_*
 - AUTH_*
 - SCHEDULER_*
-- CLOCKWORK_*
 
 ### Initialize
 

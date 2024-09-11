@@ -206,3 +206,16 @@ Macros are registered in `ExtendableServiceProvider.php`
 
 - replaceSlash
 - hashSha256
+
+## Conventions and standards
+
+### Model
+
+A Model class file should be organized into sections with the following order:
+
+- Using traits section.
+- ***Table structure*** section defining the Model's table and the Model's attributes as constants. This is intended for
+  more convenient typing in IDE and easier maintenance and updating of table's columns.
+- ***Configuration*** section defining the Model's casts, guarded, fillable, and hidden attributes.
+- ***Mutators & Accessors*** section.
+- ***Relationship*** section.

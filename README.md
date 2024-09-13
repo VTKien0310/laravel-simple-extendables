@@ -74,7 +74,7 @@ return [
             - Responder.php: utilize ResponseBuilder to create responses for better code reuse
         - Route
             - RouteInvoker.php: helper class to create modular routing definition
-        - RouteDocumentation: attributes to document triggering route in controllers
+        - RouteDocumentation/: attributes to document triggering route in controllers
     - Models/
         - Queries/
             - Filters/: base filter classes

@@ -165,5 +165,10 @@ class ExtendableServiceProvider extends ServiceProvider
         Str::macro('hashSha256', function (string $str): string {
             return hash('sha256', $str);
         });
+        Str::macro('hashEachByteSha256', function (string $str): string {
+            return collect(mb_str_split($str))
+                ->map(fn (string $character) => hash('sha256', $character))
+                ->join('');
+        });
     }
 }

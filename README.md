@@ -17,7 +17,7 @@ A simple and opinionated library contains base classes, interfaces, traits, and 
 
 ## System requirement
 
-PHP 8.1 or above
+PHP 8.2 or above
 
 ## Installation
 
@@ -162,4 +162,5 @@ Macros are registered in `ExtendableServiceProvider.php`
 
 - replaceSlash
 - hashSha256
+- hashEachByteSha256
 

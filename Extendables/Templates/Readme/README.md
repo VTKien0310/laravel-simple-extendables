@@ -206,6 +206,7 @@ Macros are registered in `ExtendableServiceProvider.php`
 
 - replaceSlash
 - hashSha256
+- hashEachByteSha256
 
 ## Conventions and standards
 

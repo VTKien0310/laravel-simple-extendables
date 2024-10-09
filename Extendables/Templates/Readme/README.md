@@ -69,15 +69,13 @@ app/
         - Relationships/: relationship interfaces for better typing and reuse of repetitive relationships
         - .php: represents a record in the data source. Models should ony contain mutators, accessors and no business
           logic
+    - Contexts/: manage request data and information
 - Http/: HTTP layer code
     - Api/:
         - Controller.php: controller for api endpoints
         - routes.php: api routing definition
     - Web/: controllers for web pages
     - Middleware/: application's middlewares
-    - Requests/
-        - States/: manage request data and information
-            - Headers/: states from headers
 - Ports/: external or third party services interaction
 
 ## Setup

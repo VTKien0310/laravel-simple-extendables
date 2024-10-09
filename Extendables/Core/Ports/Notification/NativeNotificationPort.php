@@ -29,6 +29,6 @@ class NativeNotificationPort implements NotificationPort
      */
     public function sendToEmail(string|array $email, string $notification, ...$notificationArgs): void
     {
-        Notification::route('email', $email)->notify(new $notification(...$notificationArgs));
+        Notification::route('mail', $email)->notify(new $notification(...$notificationArgs));
     }
 }

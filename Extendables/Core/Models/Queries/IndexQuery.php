@@ -12,6 +12,7 @@ use App\Extendables\Core\Models\Queries\Sorts\Sort;
 use App\Extendables\Core\Models\Queries\ValueObjects\SelectByOnlyQueryStringValueObject;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
@@ -96,6 +97,10 @@ class IndexQuery
         Builder|EloquentBuilder $builder,
         SelectByOnlyQueryStringValueObject $selectByOnlyQueryStringValueObject
     ): EloquentBuilder|Builder {
+        // preserve eager loadings by Laravel
+        $originalSelects = $builder instanceof Builder ? $builder->columns : $builder->getQuery()->columns;
+        $eagerLoadedSelects = array_filter($originalSelects, fn ($statement) => $statement instanceof Expression);
+
         $onlySelect = $this->onlyQueryStringState->getOnlyOfResource($selectByOnlyQueryStringValueObject->resourceName);
 
         $selectColumns = empty($onlySelect)
@@ -113,7 +118,7 @@ class IndexQuery
             ->map(fn ($column): string => "$selectByOnlyQueryStringValueObject->table.$column")
             ->toArray();
 
-        return $builder->select($selectColumns);
+        return $builder->select(array_merge($selectColumns, $eagerLoadedSelects));
     }
 
     private function filterInvalidSelects(
@@ -169,7 +174,7 @@ class IndexQuery
             }
         }
 
-        return $builder->withCount($eagerLoadedCount);
+        return empty($eagerLoadedCount) ? $builder : $builder->withCount($eagerLoadedCount);
     }
 
     private function eagerLoadRelations(EloquentBuilder $builder, array $eagerLoadableRelations): EloquentBuilder
@@ -189,6 +194,6 @@ class IndexQuery
             }
         }
 
-        return $builder->with($eagerLoadedRelations);
+        return empty($eagerLoadedRelations) ? $builder : $builder->with($eagerLoadedRelations);
     }
 }

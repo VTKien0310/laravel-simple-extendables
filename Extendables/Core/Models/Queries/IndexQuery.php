@@ -99,6 +99,7 @@ class IndexQuery
     ): EloquentBuilder|Builder {
         // preserve eager loadings by Laravel
         $originalSelects = $builder instanceof Builder ? $builder->columns : $builder->getQuery()->columns;
+        $originalSelects = empty($originalSelects) ? [] : $originalSelects;
         $eagerLoadedSelects = array_filter($originalSelects, fn ($statement) => $statement instanceof Expression);
 
         $onlySelect = $this->onlyQueryStringState->getOnlyOfResource($selectByOnlyQueryStringValueObject->resourceName);

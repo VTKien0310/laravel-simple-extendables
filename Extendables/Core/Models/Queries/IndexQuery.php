@@ -23,8 +23,7 @@ class IndexQuery
         private readonly SortQueryStringState $sortQueryStringState,
         private readonly OnlyQueryStringState $onlyQueryStringState,
         private readonly RelationQueryStringState $relationQueryStringState
-    ) {
-    }
+    ) {}
 
     /**
      * @param  Filter[]  $allowedFilters
@@ -34,7 +33,7 @@ class IndexQuery
         Builder|EloquentBuilder $builder,
         array $allowedFilters = [],
         array $allowedSorts = [],
-        SelectByOnlyQueryStringValueObject $selectByOnlyQueryStringValueObject = null,
+        ?SelectByOnlyQueryStringValueObject $selectByOnlyQueryStringValueObject = null,
         array $eagerLoadableCounts = [],
         array $eagerLoadableRelations = []
     ): Builder|EloquentBuilder {
@@ -46,6 +45,8 @@ class IndexQuery
             $builder = $this->applyScopedSelect($builder, $selectByOnlyQueryStringValueObject);
         }
 
+        // since eager loadings are treated as "add select" by Laravel,
+        // we'll handle them after scoping select to follow the framework's convention
         if ($builder instanceof EloquentBuilder) {
             $builder = $this->eagerLoadCounts($builder, $eagerLoadableCounts);
             $builder = $this->eagerLoadRelations($builder, $eagerLoadableRelations);
@@ -97,10 +98,7 @@ class IndexQuery
         Builder|EloquentBuilder $builder,
         SelectByOnlyQueryStringValueObject $selectByOnlyQueryStringValueObject
     ): EloquentBuilder|Builder {
-        // preserve eager loadings by Laravel
-        $originalSelects = $builder instanceof Builder ? $builder->columns : $builder->getQuery()->columns;
-        $originalSelects = empty($originalSelects) ? [] : $originalSelects;
-        $eagerLoadedSelects = array_filter($originalSelects, fn ($statement) => $statement instanceof Expression);
+        $eagerLoadingSelects = $this->getEagerLoadingSelectsOfBuilder($builder);
 
         $onlySelect = $this->onlyQueryStringState->getOnlyOfResource($selectByOnlyQueryStringValueObject->resourceName);
 
@@ -119,7 +117,16 @@ class IndexQuery
             ->map(fn ($column): string => "$selectByOnlyQueryStringValueObject->table.$column")
             ->toArray();
 
-        return $builder->select(array_merge($selectColumns, $eagerLoadedSelects));
+        // preserve eager loadings of the input builder
+        return $builder->select(array_merge($selectColumns, $eagerLoadingSelects));
+    }
+
+    private function getEagerLoadingSelectsOfBuilder(Builder|EloquentBuilder $builder): array
+    {
+        $builderSelects = $builder instanceof Builder ? $builder->columns : $builder->getQuery()->columns;
+        $builderSelects = empty($builderSelects) ? [] : $builderSelects;
+
+        return array_filter($builderSelects, fn ($statement) => $statement instanceof Expression);
     }
 
     private function filterInvalidSelects(

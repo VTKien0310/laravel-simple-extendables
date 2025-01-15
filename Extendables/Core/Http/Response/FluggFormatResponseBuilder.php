@@ -136,4 +136,12 @@ class FluggFormatResponseBuilder implements ResponseBuilder
     {
         return $this->makeErrorResponse($errorCode, $message, Response::HTTP_TOO_MANY_REQUESTS);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function responseGone(string $errorCode, ?string $message = null): JsonResponse
+    {
+        return $this->makeErrorResponse($errorCode, $message, Response::HTTP_GONE);
+    }
 }

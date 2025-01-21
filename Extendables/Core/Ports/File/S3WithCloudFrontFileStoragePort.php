@@ -3,14 +3,10 @@
 namespace App\Extendables\Core\Ports\File;
 
 use Aws\CloudFront\UrlSigner;
+use DateTimeInterface;
 
 class S3WithCloudFrontFileStoragePort extends S3FileStoragePort
 {
-    /**
-     * @param  UrlSigner  $urlSigner
-     * @param  string  $workDir
-     * @param  int  $defaultTempUrlDuration
-     */
     public function __construct(
         private readonly UrlSigner $urlSigner,
         string $workDir = '',
@@ -20,11 +16,11 @@ class S3WithCloudFrontFileStoragePort extends S3FileStoragePort
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function makeTempUrlForPath(
         string $path,
-        ?int $duration = null,
+        int|DateTimeInterface|null $duration = null,
         array $options = [],
         bool $isWorkDirPath = false
     ): string {
@@ -32,9 +28,21 @@ class S3WithCloudFrontFileStoragePort extends S3FileStoragePort
             $path = "$this->workDir/$path";
         }
 
+        if (is_int($duration)) {
+            $duration = intval(now()->addMinutes($duration)->timestamp);
+        }
+
+        if (is_null($duration)) {
+            $duration = intval(now()->addMinutes($this->defaultTempUrlDuration)->timestamp);
+        }
+
+        if ($duration instanceof DateTimeInterface) {
+            $duration = intval($duration->getTimestamp());
+        }
+
         return $this->urlSigner->getSignedUrl(
             $this->disk()->url($path),
-            $duration ?: now()->addMinutes($this->defaultTempUrlDuration)->timestamp,
+            $duration,
             $options
         );
     }
@@ -42,8 +50,8 @@ class S3WithCloudFrontFileStoragePort extends S3FileStoragePort
     public function makeDownloadUrlForPath(
         string $path,
         string $filename,
-        string $contentType = null,
-        int $duration = null,
+        ?string $contentType = null,
+        int|DateTimeInterface|null $duration = null,
         array $options = [],
         bool $isWorkDirPath = false
     ): string {

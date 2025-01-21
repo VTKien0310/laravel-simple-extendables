@@ -2,6 +2,7 @@
 
 namespace App\Extendables\Core\Ports\File;
 
+use DateTimeInterface;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\File;
@@ -11,15 +12,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class S3FileStoragePort implements FileStoragePort
 {
-    /**
-     * @var string
-     */
     private readonly string $diskName;
 
-    /**
-     * @param  string  $workDir
-     * @param  int  $defaultTempUrlDuration
-     */
     public function __construct(
         protected string $workDir = '',
         protected int $defaultTempUrlDuration = 30
@@ -27,9 +21,6 @@ class S3FileStoragePort implements FileStoragePort
         $this->diskName = 's3';
     }
 
-    /**
-     * @inheritDoc
-     */
     public function setWorkDir(string $workDir): void
     {
         $this->workDir = $workDir;
@@ -37,32 +28,24 @@ class S3FileStoragePort implements FileStoragePort
 
     /**
      * Get a new disk instance
-     *
-     * @return Filesystem|FilesystemAdapter
      */
     protected function disk(): Filesystem|FilesystemAdapter
     {
         return Storage::disk($this->diskName);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getDiskName(): string
     {
         return $this->diskName;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getWorkDir(): string
     {
         return $this->workDir;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function putFileAs(
         File|UploadedFile $file,
@@ -79,18 +62,13 @@ class S3FileStoragePort implements FileStoragePort
         return $this->disk()->putFileAs($fileStoragePath, $file, $name);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function putFile(File|UploadedFile $file, bool $isRelativeToWorkDir = true): bool|string
     {
         $fileStoragePath = $isRelativeToWorkDir ? $this->workDir : '';
+
         return $this->disk()->putFile($fileStoragePath, $file);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function delete(string $path, bool $isWorkDirPath = false): bool
     {
         if ($isWorkDirPath) {
@@ -101,11 +79,11 @@ class S3FileStoragePort implements FileStoragePort
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function makeTempUrlForPath(
         string $path,
-        ?int $duration = null,
+        int|DateTimeInterface|null $duration = null,
         array $options = [],
         bool $isWorkDirPath = false
     ): string {
@@ -120,9 +98,6 @@ class S3FileStoragePort implements FileStoragePort
         );
     }
 
-    /**
-     * @inheritDoc
-     */
     public function makeUrlForPath(string $path, bool $isWorkDirPath = false): string
     {
         if ($isWorkDirPath) {
@@ -132,17 +107,15 @@ class S3FileStoragePort implements FileStoragePort
         return $this->disk()->url($path);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function get(string $path, bool $isWorkDirPath = true): string
     {
         $path = $isWorkDirPath ? "{$this->getWorkDir()}/$path" : $path;
-        return $this->disk()->get($path);
+
+        return $this->disk()->get($path) ?? '';
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function putBinaryContentAs(
         string $file,
@@ -164,7 +137,7 @@ class S3FileStoragePort implements FileStoragePort
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function download(
         string $path,
@@ -180,7 +153,7 @@ class S3FileStoragePort implements FileStoragePort
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getFullPath(string $path, bool $isWorkDirPath = true): string
     {
@@ -208,13 +181,13 @@ class S3FileStoragePort implements FileStoragePort
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function makeDownloadUrlForPath(
         string $path,
         string $filename,
-        string $contentType = null,
-        int $duration = null,
+        ?string $contentType = null,
+        int|DateTimeInterface|null $duration = null,
         array $options = [],
         bool $isWorkDirPath = false
     ): string {
@@ -228,7 +201,10 @@ class S3FileStoragePort implements FileStoragePort
         );
     }
 
-    protected function downloadResponseOptions(string $filename, string $contentType = null): array
+    /**
+     * @return string[]
+     */
+    protected function downloadResponseOptions(string $filename, ?string $contentType = null): array
     {
         $responseOptions = [
             'ResponseContentDisposition' => "filename=$filename",

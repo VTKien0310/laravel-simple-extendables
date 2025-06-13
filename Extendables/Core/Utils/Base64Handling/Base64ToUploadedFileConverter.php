@@ -6,12 +6,7 @@ use Illuminate\Http\UploadedFile;
 
 class Base64ToUploadedFileConverter
 {
-    /**
-     * @param  string  $base64
-     * @param  string  $fileName
-     * @return UploadedFile
-     */
-    function handle(string $base64, string $fileName): UploadedFile
+    public function handle(string $base64, string $fileName): UploadedFile
     {
         // trim the data header from the encoded string
         if (str_contains($base64, ';base64')) {
@@ -24,7 +19,7 @@ class Base64ToUploadedFileConverter
         $tempFilePath = tempnam(sys_get_temp_dir(), 'php');
         file_put_contents($tempFilePath, $binary);
 
-        // create a new UploadedFile instance with 'test: true' for locally created file
-        return new UploadedFile($tempFilePath, $fileName, test: true);
+        // create a new UploadedFile instance with 'test: true' to indicate a locally created file instead of an HTTP uploaded one
+        return new UploadedFile($tempFilePath, $fileName, null, null, true);
     }
 }

@@ -2,7 +2,8 @@
 
 ## About
 
-A simple and opinionated library contains base classes, interfaces, traits, and templates for building APIs using Laravel
+A simple and opinionated library contains base code, helpers, and templates for building APIs using
+Laravel
 
 ## Inspiration
 
@@ -21,25 +22,37 @@ PHP 8.2 or above
 
 ## Installation
 
-### For Laravel < 11:
-
 - Copy all the library's files (or just the files you need from the library) and put them in `app/Extendables` directory
-- Add the library's service provider in the `config/app.php` file
+- Register `extendable_helpers.php` with Composer's Autoload in `composer.json`
+
+```
+{
+  ...
+  "autoload": {
+    "files": [
+      "app/Extendables/extendable_helpers.php"
+    ]
+    ...
+  }
+  ...
+}
+```
+
+- Register `ExtendableServiceProvider` with Laravel
+
+For Laravel >= 11, register the library's service provider in `bootstrap/providers.php`
 
 ```php
-'providers' => [
+return [
     ...
     \App\Extendables\Providers\ExtendableServiceProvider::class,
 ];
 ```
 
-### For Laravel >= 11:
-
-- Copy all the library's files (or just the files you need from the library) and put them in `app/Extendables` directory
-- Add the library's service provider in the `bootstrap/providers.php` file
+For Laravel < 11, register the library's service provider in `config/app.php`
 
 ```php
-return [
+'providers' => [
     ...
     \App\Extendables\Providers\ExtendableServiceProvider::class,
 ];
@@ -99,6 +112,7 @@ return [
         - validation.php: validation error code template
     - Readme/
         - README.md: readme template
+- extendable_helpers.php: reusable and handy helper functions
 
 ## Configuration
 
@@ -146,6 +160,7 @@ return Application::configure(basePath: dirname(__DIR__))
 ### Auto add accept application/json header for incoming requests
 
 Add the following middleware to the global middleware stack of your Laravel application
+
 ```php
 \App\Extendables\Core\Http\Middleware\EnsureRequestWantJsonMiddleware::class
 ```

@@ -7,33 +7,25 @@ use Illuminate\Http\UploadedFile;
 
 class ConvertRequestBase64ToUploadedFileAction
 {
-    /**
-     * @var string
-     */
     protected string $jsonBase64NameKey = 'name';
 
-    /**
-     * @var string
-     */
     protected string $jsonBase64ContentKey = 'content';
 
-    /**
-     * @var string
-     */
     protected string $jsonBase64PositionKey = 'position';
 
     /**
-     * @var UploadedFile[]|null[]|array[]
+     * @var array<string, UploadedFile|null|array<int, UploadedFile|null|array{file: ?UploadedFile, position: string|int}>>
      */
     protected array $convertedFiles = [];
 
     /**
-     * @param  Request  $request
-     * @param  array  $base64Param
-     * @param  array  $base64ArrayParam
-     * @return UploadedFile[]
+     * Handles the conversion of base64-encoded parameters and arrays in the request to uploaded files.
+     *
+     * @param  string[]  $base64Param
+     * @param  string[]  $base64ArrayParam
+     * @return array<string, UploadedFile|null|array<int, UploadedFile|null|array{file: ?UploadedFile, position: string|int}>>
      */
-    function handle(Request $request, array $base64Param = [], array $base64ArrayParam = []): array
+    public function handle(Request $request, array $base64Param = [], array $base64ArrayParam = []): array
     {
         foreach ($base64Param as $base64ParamName) {
             $this->convertBase64RequestParamToUploadedFile($request, $base64ParamName);
@@ -46,11 +38,6 @@ class ConvertRequestBase64ToUploadedFileAction
         return $this->convertedFiles;
     }
 
-    /**
-     * @param  Request  $request
-     * @param  string  $paramName
-     * @return void
-     */
     protected function convertBase64RequestParamToUploadedFile(Request $request, string $paramName): void
     {
         $paramValue = $request->input($paramName);
@@ -59,12 +46,19 @@ class ConvertRequestBase64ToUploadedFileAction
             return;
         }
 
-        if (!$this->isValidParamValue($paramValue)) {
+        if (! $this->isValidParamValue($paramValue)) {
             $this->saveConvertedFile($paramName, null);
+
             return;
         }
 
-        $base64Converter = new Base64ToUploadedFileConverter();
+        if ($this->shouldTreatAsNullParamValue($paramValue)) {
+            $this->saveConvertedFile($paramName, null);
+
+            return;
+        }
+
+        $base64Converter = new Base64ToUploadedFileConverter;
         $convertedParamValue = $base64Converter->handle(
             $this->getBase64ContentFromArray($paramValue),
             $this->getBase64NameFromArray($paramValue)
@@ -72,20 +66,26 @@ class ConvertRequestBase64ToUploadedFileAction
         $this->saveConvertedFile($paramName, $convertedParamValue);
     }
 
-    /**
-     * @param  mixed  $paramValue
-     * @return bool
-     */
     protected function isValidParamValue(mixed $paramValue): bool
     {
         return is_array($paramValue)
-            && !empty($paramValue[$this->jsonBase64ContentKey])
-            && !empty($paramValue[$this->jsonBase64NameKey]);
+            && array_key_exists($this->jsonBase64ContentKey, $paramValue)
+            && (is_string($paramValue[$this->jsonBase64ContentKey]) || is_null($paramValue[$this->jsonBase64ContentKey]))
+            && array_key_exists($this->jsonBase64NameKey, $paramValue)
+            && (is_string($paramValue[$this->jsonBase64NameKey]) || is_null($paramValue[$this->jsonBase64NameKey]));
+    }
+
+    protected function shouldTreatAsNullParamValue(mixed $paramValue): bool
+    {
+        return $this->isValidParamValue($paramValue)
+            && (
+                empty($paramValue[$this->jsonBase64ContentKey])
+                || empty($paramValue[$this->jsonBase64NameKey])
+            );
     }
 
     /**
-     * @param  array  $arr
-     * @return string
+     * @param  array<string, string>  $arr
      */
     protected function getBase64ContentFromArray(array $arr): string
     {
@@ -93,8 +93,7 @@ class ConvertRequestBase64ToUploadedFileAction
     }
 
     /**
-     * @param  array  $arr
-     * @return string
+     * @param  array<string, string>  $arr
      */
     protected function getBase64NameFromArray(array $arr): string
     {
@@ -102,20 +101,13 @@ class ConvertRequestBase64ToUploadedFileAction
     }
 
     /**
-     * @param  string  $paramName
-     * @param  array|UploadedFile|null  $convertedFile
-     * @return void
+     * @param  UploadedFile|null|array<int, UploadedFile|null|array{file: ?UploadedFile, position: string|int}>  $convertedFile
      */
     protected function saveConvertedFile(string $paramName, array|UploadedFile|null $convertedFile): void
     {
         $this->convertedFiles[$paramName] = $convertedFile;
     }
 
-    /**
-     * @param  Request  $request
-     * @param  string  $paramName
-     * @return void
-     */
     protected function convertBase64ArrayRequestParamToUploadedFile(Request $request, string $paramName): void
     {
         $paramValue = $request->input($paramName);
@@ -124,8 +116,9 @@ class ConvertRequestBase64ToUploadedFileAction
             return;
         }
 
-        if (!is_array($paramValue)) {
+        if (! is_array($paramValue)) {
             $this->saveConvertedFile($paramName, null);
+
             return;
         }
 
@@ -134,15 +127,21 @@ class ConvertRequestBase64ToUploadedFileAction
     }
 
     /**
-     * @param  array  $base64Arr
-     * @return array
+     * @param  array<int, array<string, string>>  $base64Arr
+     * @return array<int, UploadedFile|null|array{file: ?UploadedFile, position: string|int}>
      */
     protected function convertMultiBase64ToUploadedFile(array $base64Arr): array
     {
-        $base64Converter = new Base64ToUploadedFileConverter();
+        $base64Converter = new Base64ToUploadedFileConverter;
         $uploadedFiles = [];
         foreach ($base64Arr as $index => $base64) {
-            if (!$this->isValidParamValue($base64)) {
+            if (! $this->isValidParamValue($base64)) {
+                continue;
+            }
+
+            if ($this->shouldTreatAsNullParamValue($base64)) {
+                $uploadedFiles[$index] = $this->registerConvertedFile($base64, null);
+
                 continue;
             }
 
@@ -151,23 +150,25 @@ class ConvertRequestBase64ToUploadedFileAction
                 $this->getBase64NameFromArray($base64)
             );
 
-            if (isset($base64[$this->jsonBase64PositionKey])) {
-                $uploadedFiles[$index]['file'] = $convertedFile;
-                $uploadedFiles[$index]['position'] = $this->getBase64PositionFromArray($base64);
-            } else {
-                $uploadedFiles[] = $convertedFile;
-            }
+            $uploadedFiles[$index] = $this->registerConvertedFile($base64, $convertedFile);
         }
 
         return $uploadedFiles;
     }
 
     /**
-     * @param  array  $arr
-     * @return string
+     * @param  array<string, string>  $base64Data
+     * @return array{file: ?UploadedFile, position: string|int}|UploadedFile|null
      */
-    protected function getBase64PositionFromArray(array $arr): string
+    protected function registerConvertedFile(array $base64Data, ?UploadedFile $convertedFile): array|null|UploadedFile
     {
-        return $arr[$this->jsonBase64PositionKey];
+        if (isset($base64Data[$this->jsonBase64PositionKey])) {
+            return [
+                'file' => $convertedFile,
+                'position' => $base64Data[$this->jsonBase64PositionKey],
+            ];
+        }
+
+        return $convertedFile;
     }
 }

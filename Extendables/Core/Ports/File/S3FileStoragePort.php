@@ -207,7 +207,8 @@ class S3FileStoragePort implements FileStoragePort
     protected function downloadResponseOptions(string $filename, ?string $contentType = null): array
     {
         $responseOptions = [
-            'ResponseContentDisposition' => "filename=$filename",
+            // Encoding the filename with rawurlencode ensures the filename is always valid with ISO-8859-1.
+            'ResponseContentDisposition' => 'filename='.rawurlencode($filename),
         ];
 
         if ($contentType) {

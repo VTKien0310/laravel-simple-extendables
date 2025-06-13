@@ -8,6 +8,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -30,17 +31,28 @@ class FluggFormatExceptionHandler
     public function __invoke(Exceptions $exceptions): void
     {
         $customRenderer = function (Throwable $exception) {
+            $exception = $this->revealExceptionHiddenByLaravel($exception);
+
             return match (true) {
                 $exception instanceof AuthenticationException => $this->renderResponseForHttpException(Response::HTTP_UNAUTHORIZED),
                 $exception instanceof UnauthorizedException, $exception instanceof AuthorizationException => $this->renderResponseForHttpException(Response::HTTP_FORBIDDEN),
                 $exception instanceof ValidationException => $this->renderResponseForValidationException($exception),
                 $exception instanceof HttpException => $this->renderResponseForHttpException($exception->getStatusCode()),
                 $exception instanceof ModelNotFoundException => $this->renderResponseForModelNotFound($exception),
+                $exception instanceof HttpResponseException => $this->renderResponseForHttpResponseException($exception),
                 default => $this->renderResponseForUnknownException($exception)
             };
         };
 
         $exceptions->render($customRenderer);
+    }
+
+    private function revealExceptionHiddenByLaravel(Throwable $exception): Throwable
+    {
+        return match (true) {
+            $exception->getPrevious() instanceof ModelNotFoundException => $exception->getPrevious(),
+            default => $exception
+        };
     }
 
     private function makeErrorResponseData(int $statusCode, string $errorCode = '', string $errorMessage = ''): array
@@ -78,6 +90,11 @@ class FluggFormatExceptionHandler
             ),
             $statusCode
         );
+    }
+
+    private function renderResponseForHttpResponseException(HttpResponseException $httpResponseException): Response
+    {
+        return $httpResponseException->getResponse();
     }
 
     private function getHttpExceptionMessage(int $statusCode): string

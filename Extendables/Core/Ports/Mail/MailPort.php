@@ -10,18 +10,14 @@ interface MailPort
     /**
      * Send an email
      *
-     * @param string|\App\Models\User\User|\Illuminate\Support\Collection $receivers
-     * @param string $mailable
-     * @param ...$mailableArgs
+     * @param  mixed  ...$mailableArgs
      */
     public function send(string|User|Collection $receivers, string $mailable, ...$mailableArgs): void;
 
     /**
      * Send a queued email
      *
-     * @param string|\App\Models\User\User|\Illuminate\Support\Collection $receivers
-     * @param string $mailable
-     * @param ...$mailableArgs
+     * @param  mixed  ...$mailableArgs
      */
     public function queueSend(string|User|Collection $receivers, string $mailable, ...$mailableArgs): void;
 }

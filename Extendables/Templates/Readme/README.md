@@ -67,7 +67,7 @@ app/
         - Sorts/: sorts to be applied based on request query string for index queries
     - Models/:
         - Relationships/: relationship interfaces for better typing and reuse of repetitive relationships
-        - .php: represents a record in the data source. Models should ony contain mutators, accessors and no business
+        - .php: represents a record in the data source. Models should only contain mutators, accessors, and no business
           logic
     - Contexts/: manage request data and information
 - Http/: HTTP layer code
@@ -119,9 +119,9 @@ php artisan db:seed
 php artisan optimize
 ```
 
-#### Start Laravel Horizon in background
+#### Start Laravel Horizon in the background
 
-For production environment, please follow
+For the production environment, please follow
 the [official documentation](https://laravel.com/docs/11.x/horizon#deploying-horizon).
 For local development environment, you can start Horizon in background:
 
@@ -137,7 +137,7 @@ For production environment:
 * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
 ```
 
-For local development environment, you can start the Scheduler in background:
+For a local development environment, you can start the Scheduler in the background:
 
 ```
 php artisan schedule:work &
@@ -206,13 +206,16 @@ Macros are registered in `ExtendableServiceProvider.php`
 - hashSha256
 - hashEachByteSha256
 
+### Collection macros
+- toEnumValues
+
 ## Conventions and standards
 
 ### Model
 
 A Model class file should be organized into sections with the following order:
 
-- Using traits section.
+- A using traits section.
 - ***Table structure*** section defining the Model's table and the Model's attributes as constants. This is intended for
   more convenient typing in IDE and easier maintenance and updating of table's columns.
 - ***Configuration*** section defining the Model's casts, guarded, fillable, and hidden attributes.

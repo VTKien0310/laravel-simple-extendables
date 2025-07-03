@@ -35,6 +35,7 @@ use Aws\CloudFront\UrlSigner;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 
@@ -141,14 +142,21 @@ class ExtendableServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->builderMacros();
+        $this->strMacros();
+        $this->collectionMacros();
+    }
+
+    private function builderMacros(): void
+    {
         Builder::macro('whereEmpty', function (string $field) {
             return $this->where(
-                fn(Builder $query) => $query->whereNull($field)->orWhere($field, '=', '')
+                fn (Builder $query) => $query->whereNull($field)->orWhere($field, '=', '')
             );
         });
         EloquentBuilder::macro('whereEmpty', function (string $field) {
             return $this->where(
-                fn(EloquentBuilder $query) => $query->whereNull($field)->orWhere($field, '=', '')
+                fn (EloquentBuilder $query) => $query->whereNull($field)->orWhere($field, '=', '')
             );
         });
 
@@ -158,7 +166,10 @@ class ExtendableServiceProvider extends ServiceProvider
         EloquentBuilder::macro('whereNotEmpty', function (string $field) {
             return $this->whereNotNull($field)->where($field, '<>', '');
         });
+    }
 
+    private function strMacros(): void
+    {
         Str::macro('replaceSlash', function (string $str, string $replace = '-'): string {
             return str_replace(['/', '\\'], $replace, $str);
         });
@@ -169,6 +180,13 @@ class ExtendableServiceProvider extends ServiceProvider
             return collect(mb_str_split($str))
                 ->map(fn (string $character) => hash('sha256', $character))
                 ->join('');
+        });
+    }
+
+    private function collectionMacros(): void
+    {
+        Collection::macro('toEnumValues', function (): Collection {
+            return $this->map(fn (BackedEnum $value) => $value->value);
         });
     }
 }

@@ -32,6 +32,7 @@ use App\Extendables\Core\Ports\RemoteLog\RemoteLogPort;
 use App\Extendables\Core\Ports\RemoteLog\SlackLogPort;
 use App\Extendables\Core\Utils\ExtendedLengthAwarePaginator;
 use Aws\CloudFront\UrlSigner;
+use BackedEnum;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;

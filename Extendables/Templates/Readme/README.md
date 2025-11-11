@@ -84,19 +84,19 @@ app/
 
 #### For local development environment:
 
-```
+```shell
 composer install
 ```
 
 #### For production environment:
 
-```
+```shell
 composer install --no-dev
 ```
 
 ### Config .env
 
-```
+```shell
 cp .env.example .env
 ```
 
@@ -125,7 +125,7 @@ For the production environment, please follow
 the [official documentation](https://laravel.com/docs/11.x/horizon#deploying-horizon).
 For local development environment, you can start Horizon in background:
 
-```
+```shell
 php artisan horizon &
 ```
 
@@ -139,13 +139,13 @@ For production environment:
 
 For a local development environment, you can start the Scheduler in the background:
 
-```
+```shell
 php artisan schedule:work &
 ```
 
 #### Seed data for local development
 
-```
+```shell
 php artisan db:seed --class=DevelopmentSeeder
 ```
 
@@ -181,13 +181,13 @@ When using dev server's s3 for local development, set the **filesystems.root_dir
 
 To check Horizon status:
 
-```
+```shell
 php artisan horizon:status
 ```
 
 To stop or restart Horizon:
 
-```
+```shell
 php artisan horizon:terminate
 ```
 

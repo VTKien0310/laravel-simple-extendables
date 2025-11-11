@@ -71,4 +71,11 @@ interface ResponseBuilder
      * @return JsonResponse
      */
     public function responseGone(string $errorCode, ?string $message = null): JsonResponse;
+
+    /**
+     * @param  string  $errorCode
+     * @param  string|null  $message
+     * @return JsonResponse
+     */
+    public function responseConflict(string $errorCode, ?string $message = null): JsonResponse;
 }

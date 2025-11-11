@@ -144,4 +144,12 @@ class FluggFormatResponseBuilder implements ResponseBuilder
     {
         return $this->makeErrorResponse($errorCode, $message, Response::HTTP_GONE);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function responseConflict(string $errorCode, ?string $message = null): JsonResponse
+    {
+        return $this->makeErrorResponse($errorCode, $message, Response::HTTP_CONFLICT);
+    }
 }

@@ -217,4 +217,18 @@ class S3FileStoragePort implements FileStoragePort
 
         return $responseOptions;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function saveFileToLocal(string $path, string $localName, ?string $localDirectory = null, bool $isWorkDirPath = false): string
+    {
+        $localDirectory = $localDirectory ?? sys_get_temp_dir();
+        $localPath = $localDirectory.'/'.$localName;
+
+        $fileContent = $this->get($path, $isWorkDirPath);
+        file_put_contents($localPath, $fileContent);
+
+        return $localPath;
+    }
 }

@@ -94,4 +94,15 @@ interface FileStoragePort
         array $options = [],
         bool $isWorkDirPath = false
     ): string;
+
+    /**
+     * Save a file to the local filesystem.
+     *
+     * @param  string  $path  The source file path.
+     * @param  string  $localName  The name for the saved file locally.
+     * @param  string|null  $localDirectory  The local directory where the file will be saved. Defaults to the system temp directory if not provided.
+     * @param  bool  $isWorkDirPath  Indicates whether the source path is relative to the working directory.
+     * @return string The full path of the saved local file.
+     */
+    public function saveFileToLocal(string $path, string $localName, ?string $localDirectory = null, bool $isWorkDirPath = false): string;
 }

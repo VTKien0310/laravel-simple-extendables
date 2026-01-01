@@ -143,4 +143,18 @@ class DummyFileStoragePort implements FileStoragePort
     ): string {
         return $path;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function saveFileToLocal(
+        string $path,
+        string $localName,
+        ?string $localDirectory = null,
+        bool $isWorkDirPath = false
+    ): string {
+        $localDirectory = $localDirectory ?? sys_get_temp_dir();
+
+        return $localDirectory.'/'.$localName;
+    }
 }

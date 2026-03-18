@@ -40,6 +40,7 @@
 
 app/
 
+- Constants/: application's global constants
 - Enums/: application's global enums
 - Extendables/: base classes, interfaces, and traits for reuse across the entire application. It has its own README.md
   in the directory

@@ -69,6 +69,7 @@ For Laravel < 11, register the library's service provider in `config/app.php`
         - Enums/: HTTP related enum templates
         - Exception/
             - Handler.php: customized exception handler
+            - ExtendableException.php: interface for making custom exceptions that can be rendered by the library's ExceptionHandler
         - Middleware/: middleware templates
         - Request/
             - States/: manage request data and information

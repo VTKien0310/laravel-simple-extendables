@@ -25,7 +25,7 @@ class FluggFormatExceptionHandler
 
     public function __construct()
     {
-        $this->responseBuilder = new FluggFormatResponseBuilder();
+        $this->responseBuilder = new FluggFormatResponseBuilder;
     }
 
     public function __invoke(Exceptions $exceptions): void
@@ -40,6 +40,7 @@ class FluggFormatExceptionHandler
                 $exception instanceof HttpException => $this->renderResponseForHttpException($exception->getStatusCode()),
                 $exception instanceof ModelNotFoundException => $this->renderResponseForModelNotFound($exception),
                 $exception instanceof HttpResponseException => $this->renderResponseForHttpResponseException($exception),
+                $exception instanceof ExtendableException => $this->renderResponseForExtendableException($exception),
                 default => $this->renderResponseForUnknownException($exception)
             };
         };
@@ -189,5 +190,17 @@ class FluggFormatExceptionHandler
             : $this->convertForNonDebugEnv($e);
 
         return response()->json($unknownErrorResponseData, $this->getUnknownErrorStatusCode($e));
+    }
+
+    private function renderResponseForExtendableException(ExtendableException $exception): JsonResponse
+    {
+        return response()->json(
+            $this->makeErrorResponseData(
+                $exception->httpStatusCode(),
+                $exception->httpErrorCode(),
+                $exception->httpErrorMessage()
+            ),
+            $exception->httpStatusCode()
+        );
     }
 }

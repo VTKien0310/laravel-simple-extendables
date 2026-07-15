@@ -3,11 +3,12 @@
 namespace App\Extendables\Core\Models\Queries;
 
 use App\Extendables\Core\Http\Request\States\QueryString\PaginateQueryStringState;
+use Closure;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
 
-class PaginateQuery
+class OffsetPaginateQuery
 {
     const MAX_PAGE_SIZE = 2000;
 
@@ -23,12 +24,14 @@ class PaginateQuery
      * @param  EloquentBuilder|Builder  $builder
      * @param  int|null  $pageSize
      * @param  int|null  $pageNumber
+     * @param  Closure|int|null  $total
      * @return LengthAwarePaginator
      */
-    function handle(
+    public function handle(
         EloquentBuilder|Builder $builder,
         ?int $pageSize = null,
-        ?int $pageNumber = null
+        ?int $pageNumber = null,
+        Closure|int|null $total = null
     ): LengthAwarePaginator {
         if (empty($pageSize)) {
             $pageSize = $this->paginateQueryStringState->getPageSize();
@@ -41,7 +44,8 @@ class PaginateQuery
 
         return $builder->paginate(
             perPage: $pageSize,
-            page: $pageNumber
+            page: $pageNumber,
+            total: $total,
         );
     }
 }

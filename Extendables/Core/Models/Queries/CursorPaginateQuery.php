@@ -3,49 +3,43 @@
 namespace App\Extendables\Core\Models\Queries;
 
 use App\Extendables\Core\Http\Request\States\QueryString\PaginateQueryStringState;
-use Closure;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Pagination\Cursor;
 
-class OffsetPaginateQuery
+class CursorPaginateQuery
 {
     const int MAX_PAGE_SIZE = 2000;
 
-    /**
-     * @param  PaginateQueryStringState  $paginateQueryStringState
-     */
-    function __construct(
+    public function __construct(
         private readonly PaginateQueryStringState $paginateQueryStringState
-    ) {
-    }
+    ) {}
 
     /**
      * @param  EloquentBuilder|Builder  $builder
      * @param  int|null  $pageSize
-     * @param  int|null  $pageNumber
-     * @param  Closure|int|null  $total
-     * @return LengthAwarePaginator
+     * @param  Cursor|string|null  $cursor
+     * @return CursorPaginator
      */
     public function handle(
         EloquentBuilder|Builder $builder,
         ?int $pageSize = null,
-        ?int $pageNumber = null,
-        Closure|int|null $total = null
-    ): LengthAwarePaginator {
+        Cursor|string|null $cursor = null
+    ): CursorPaginator {
         if (empty($pageSize)) {
             $pageSize = $this->paginateQueryStringState->getPageSize();
         }
         $pageSize = min($pageSize, self::MAX_PAGE_SIZE);
 
-        if (empty($pageNumber)) {
-            $pageNumber = $this->paginateQueryStringState->getPageNumber();
+        if (empty($cursor)) {
+            $cursor = $this->paginateQueryStringState->getCursor() ?: null;
         }
 
-        return $builder->paginate(
+        return $builder->cursorPaginate(
             perPage: $pageSize,
-            page: $pageNumber,
-            total: $total,
+            cursorName: 'page[cursor]',
+            cursor: $cursor
         );
     }
 }

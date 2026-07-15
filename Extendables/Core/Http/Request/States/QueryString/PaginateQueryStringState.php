@@ -13,4 +13,9 @@ interface PaginateQueryStringState
      * @return int
      */
     function getPageNumber(): int;
+
+    /**
+     * @return string
+     */
+    public function getCursor(): string;
 }

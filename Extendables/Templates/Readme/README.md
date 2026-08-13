@@ -40,43 +40,45 @@
 
 app/
 
+- Console/:
+    - ArtisanCommand/registry.php: features-related Artisan commands registry
+    - console.php: scheduled tasks and other Artisan commands registry
 - Constants/: application's global constants
 - Enums/: application's global enums
-- Extendables/: base classes, interfaces, and traits for reuse across the entire application. It has its own README.md
-  in the directory
+- Extendables/: base classes, interfaces, and traits for reuse across the entire application
 - Features/: features related code
     - Actions/: reusable business and application logic
-    - Authorizers/: authorization logic
+    - ApiResources/: API resources to transform data for JSON responses
     - ArtisanCommands/: custom artisan commands
-    - Validators/: validation logic
-    - Jobs/: queue jobs
-    - Notifications/: notifications
+    - Authorizers/: authorization logic
+    - Cache/: caching related
+    - Commands/: reusable write to database logic
+    - Constants/: feature-related constants
+    - Contexts/: manage request data and information
+    - Enums/: feature-related enums
     - Exports/: exporters
     - Imports/: importers
-    - ValueObjects/: classes used to structure data instead of using unstructured and hard to predict arrays
-    - Cache/: caching related
-    - StateMachines/: implementation of the state machine pattern
-    - ApiResources/: API resources to transform data for JSON responses
+    - Jobs/: queue jobs
     - Middlewares/: features related middlewares
-    - Responses/
-        - ErrorCodeEnum.php: error codes of responses
-        - Responder.php: build responses
-    - Enums/: feature related enums
-    - Commands/: reusable write to database logic
+    - Models/:
+        - .php: represents a record in the data source. Models should only contain mutators, accessors, and no business
+          logic
+        - Relationships/: relationship interfaces for better typing and reuse of repetitive relationships
+    - Notifications/: notifications
     - Queries/: reusable read from database logic
         - Filters/: filters to be applied based on request query string for index queries
         - Sorts/: sorts to be applied based on request query string for index queries
-    - Models/:
-        - Relationships/: relationship interfaces for better typing and reuse of repetitive relationships
-        - .php: represents a record in the data source. Models should only contain mutators, accessors, and no business
-          logic
-    - Contexts/: manage request data and information
+    - Responses/
+        - ErrorCodeEnum.php: error codes of responses
+        - Responder.php: build responses
+    - StateMachines/: implementation of the state machine pattern
+    - Validators/: validation logic
+    - ValueObjects/: classes used to structure data instead of using unstructured and hard to predict arrays
 - Http/: HTTP layer code
-    - Api/:
-        - Controller.php: controller for api endpoints
-        - routes.php: api routing definition
-    - Web/: controllers for web pages
-    - Middleware/: application's middlewares
+    - Middlewares/: application's global middlewares
+    - Modules/:
+        - Controller.php: controller for the HTTP module
+        - routes.php: api routing definition for the HTTP module
 - Ports/: external or third party services interaction
 
 ## Setup

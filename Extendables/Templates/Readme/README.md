@@ -42,6 +42,7 @@ app/
 
 - Console/:
     - ArtisanCommand/registry.php: features-related Artisan commands registry
+    - Queue/: queue-related files
     - console.php: scheduled tasks and other Artisan commands registry
 - Constants/: application's global constants
 - Enums/: application's global enums

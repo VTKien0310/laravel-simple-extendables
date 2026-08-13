@@ -30,6 +30,9 @@ class FluggFormatExceptionHandler
 
     public function __invoke(Exceptions $exceptions): void
     {
+        // Always render JSON responses
+        // $exceptions->shouldRenderJsonWhen(fn() => true);
+
         $customRenderer = function (Throwable $exception) {
             $exception = $this->revealExceptionHiddenByLaravel($exception);
 

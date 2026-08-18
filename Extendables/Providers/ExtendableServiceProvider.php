@@ -99,26 +99,25 @@ class ExtendableServiceProvider extends ServiceProvider
         });
 
         // state binding
-        $request = request();
-        $this->app->singleton(
+        $this->app->scoped(
             RelationQueryStringState::class,
-            fn () => new JsonApiRelationQueryStringState($request->query(HttpRequestParamEnum::INCLUDE->value))
+            fn () => new JsonApiRelationQueryStringState(request()->query(HttpRequestParamEnum::INCLUDE->value))
         );
-        $this->app->singleton(
+        $this->app->scoped(
             SortQueryStringState::class,
-            fn () => new JsonApiSortQueryStringState($request->query(HttpRequestParamEnum::SORT->value))
+            fn () => new JsonApiSortQueryStringState(request()->query(HttpRequestParamEnum::SORT->value))
         );
-        $this->app->singleton(
+        $this->app->scoped(
             FilterQueryStringState::class,
-            fn () => new JsonApiFilterQueryStringState($request->query(HttpRequestParamEnum::FILTER->value))
+            fn () => new JsonApiFilterQueryStringState(request()->query(HttpRequestParamEnum::FILTER->value))
         );
-        $this->app->singleton(
+        $this->app->scoped(
             PaginateQueryStringState::class,
-            fn () => new JsonApiPaginateQueryStringState($request->query(HttpRequestParamEnum::PAGINATE->value))
+            fn () => new JsonApiPaginateQueryStringState(request()->query(HttpRequestParamEnum::PAGINATE->value))
         );
-        $this->app->singleton(
+        $this->app->scoped(
             OnlyQueryStringState::class,
-            fn () => new JsonApiOnlyQueryStringState($request->query(HttpRequestParamEnum::ONLY->value))
+            fn () => new JsonApiOnlyQueryStringState(request()->query(HttpRequestParamEnum::ONLY->value))
         );
 
         // others binding

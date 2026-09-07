@@ -5,9 +5,19 @@ function is_empty_array(mixed $var): bool
     return $var === [];
 }
 
+function is_not_empty_array(mixed $var): bool
+{
+    return is_array($var) && $var !== [];
+}
+
 function is_empty_string(mixed $var): bool
 {
     return $var === '';
+}
+
+function is_not_empty_string(mixed $var): bool
+{
+    return is_string($var) && $var !== '';
 }
 
 function array_diff_assoc_recursive(array $array1, array $array2): array
@@ -15,8 +25,9 @@ function array_diff_assoc_recursive(array $array1, array $array2): array
     $diff = [];
 
     foreach ($array1 as $key => $value) {
-        if (!array_key_exists($key, $array2)) {
+        if (! array_key_exists($key, $array2)) {
             $diff[$key] = $value;
+
             continue;
         }
 
@@ -25,6 +36,7 @@ function array_diff_assoc_recursive(array $array1, array $array2): array
             if ($nested !== []) {
                 $diff[$key] = $nested;
             }
+
             continue;
         }
 

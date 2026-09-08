@@ -20,6 +20,11 @@ function is_not_empty_string(mixed $var): bool
     return is_string($var) && $var !== '';
 }
 
+function is_blank_string(mixed $var): bool
+{
+    return $var === null || (is_string($var) && trim($var) === '');
+}
+
 function array_diff_assoc_recursive(array $array1, array $array2): array
 {
     $diff = [];

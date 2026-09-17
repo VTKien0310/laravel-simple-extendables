@@ -19,6 +19,12 @@ interface ResponseBuilder
     function responseCreated(mixed $data): JsonResponse;
 
     /**
+     * @param  mixed  $data
+     * @return JsonResponse
+     */
+    function responseAccepted(mixed $data = null): JsonResponse;
+
+    /**
      * @return JsonResponse
      */
     function responseNoContent(): JsonResponse;

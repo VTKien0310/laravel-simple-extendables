@@ -6,7 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Symfony\Component\HttpFoundation\Response;
 
-class FluggFormatResponseBuilder implements ResponseBuilder
+class JsonApiResponseBuilder implements ResponseBuilder
 {
     /**
      * @inheritDoc
@@ -50,6 +50,14 @@ class FluggFormatResponseBuilder implements ResponseBuilder
     function responseCreated(mixed $data): JsonResponse
     {
         return $this->makeSuccessResponse($data, Response::HTTP_CREATED);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function responseAccepted(mixed $data = null): JsonResponse
+    {
+        return $this->makeSuccessResponse($data, Response::HTTP_ACCEPTED);
     }
 
     /**

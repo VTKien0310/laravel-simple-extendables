@@ -29,6 +29,15 @@ class Responder
      * @param  mixed  $data
      * @return JsonResponse
      */
+    public function responseAccepted(mixed $data = null): JsonResponse
+    {
+        return $this->responseBuilder->responseAccepted($data);
+    }
+
+    /**
+     * @param  mixed  $data
+     * @return JsonResponse
+     */
     function responseRawContent(mixed $data): JsonResponse
     {
         return $this->responseBuilder->responseSuccess($data);

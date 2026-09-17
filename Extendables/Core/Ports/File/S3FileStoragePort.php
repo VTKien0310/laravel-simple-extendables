@@ -231,4 +231,37 @@ class S3FileStoragePort implements FileStoragePort
 
         return $localPath;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function streamFileToLocal(string $path, string $localName, ?string $localDirectory = null, bool $isWorkDirPath = false): string
+    {
+        $localDirectory = $localDirectory ?? sys_get_temp_dir();
+        $localPath = $localDirectory.'/'.$localName;
+
+        $resolvedPath = $isWorkDirPath ? "{$this->getWorkDir()}/$path" : $path;
+
+        $remoteStream = $this->disk()->readStream($resolvedPath);
+
+        if ($remoteStream === null) {
+            throw new \RuntimeException("Unable to open remote stream for file: {$resolvedPath}");
+        }
+
+        $localStream = fopen($localPath, 'w');
+
+        if ($localStream === false) {
+            fclose($remoteStream);
+            throw new \RuntimeException("Unable to open local file for writing: {$localPath}");
+        }
+
+        try {
+            stream_copy_to_stream($remoteStream, $localStream);
+        } finally {
+            fclose($remoteStream);
+            fclose($localStream);
+        }
+
+        return $localPath;
+    }
 }

@@ -157,4 +157,15 @@ class DummyFileStoragePort implements FileStoragePort
 
         return $localDirectory.'/'.$localName;
     }
+
+    public function streamFileToLocal(
+        string $path,
+        string $localName,
+        ?string $localDirectory = null,
+        bool $isWorkDirPath = false
+    ): string {
+        $localDirectory = $localDirectory ?? sys_get_temp_dir();
+
+        return $localDirectory.'/'.$localName;
+    }
 }

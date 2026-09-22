@@ -142,7 +142,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 With the library's handler class:
 
 ```php
-use App\Extendables\Core\Http\Exception\FluggFormatClassicExceptionHandler as ExceptionHandler;
+use App\Extendables\Core\Http\Exception\JsonApiClassicExceptionHandler as ExceptionHandler;
 ```
 
 #### For Laravel >= 11:
@@ -153,7 +153,7 @@ handler:
 ```php
 return Application::configure(basePath: dirname(__DIR__))
     ...
-    ->withExceptions(new FluggFormatExceptionHandler())
+    ->withExceptions(new JsonApiClassicExceptionHandler())
     ...
     ->create();
 ```

@@ -60,12 +60,15 @@ app/
     - Exports/: exporters
     - Imports/: importers
     - Jobs/: queue jobs
+    - Mails/: mails
     - Middlewares/: features related middlewares
     - Models/:
         - .php: represents a record in the data source. Models should only contain mutators, accessors, and no business
           logic
         - Relationships/: relationship interfaces for better typing and reuse of repetitive relationships
     - Notifications/: notifications
+    - Providers/: feature-scoped service providers, for wiring specific to this feature rather than the whole
+      application
     - Queries/: reusable read from database logic
         - Filters/: filters to be applied based on request query string for index queries
         - Sorts/: sorts to be applied based on request query string for index queries
@@ -81,6 +84,18 @@ app/
         - Controller.php: controller for the HTTP module
         - routes.php: api routing definition for the HTTP module
 - Ports/: external or third party services interaction
+
+tests/
+
+- Architecture/: `arch()` preset rules (banned functions, security preset, ...)
+- Extendables/: tests for `app/Extendables/`
+- Factories/: test data factories on the house `Tests\TestFactory` abstract (`new()`/`create()`/`times()`) —
+  independent of `database/factories/` and seeders, deliberately
+- Features/: one subtree per `app/Features/{Feature}`, unit-level
+- Http/: one subtree per HTTP module, one test file per endpoint
+- Integration/: cross-cutting tests that drive several routes/Actions/ports to prove one contract (a
+  middleware, a gate, a port's whole surface) holds across the board — not scoped to one endpoint or one action
+- Ports/: tests for `app/Ports/` (external service integrations)
 
 ## Setup
 
@@ -211,6 +226,7 @@ Macros are registered in `ExtendableServiceProvider.php`
 - hashEachByteSha256
 
 ### Collection macros
+
 - toEnumValues
 
 ## Conventions and standards

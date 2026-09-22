@@ -3,7 +3,7 @@
 namespace App\Extendables\Core\Http\Exception;
 
 use App\Extendables\Core\Http\Enums\CommonHttpErrorCodeEnum;
-use App\Extendables\Core\Http\Response\FluggFormatResponseBuilder;
+use App\Extendables\Core\Http\Response\JsonApiResponseBuilder;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Container\Container;
@@ -16,10 +16,11 @@ use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
-class FluggFormatClassicExceptionHandler extends ExceptionHandler
+class JsonApiClassicExceptionHandler extends ExceptionHandler
 {
-    private readonly FluggFormatResponseBuilder $responseBuilder;
+    private readonly JsonApiResponseBuilder $responseBuilder;
 
     /**
      * @inheritDoc
@@ -28,7 +29,7 @@ class FluggFormatClassicExceptionHandler extends ExceptionHandler
     {
         parent::__construct($container);
 
-        $this->responseBuilder = new FluggFormatResponseBuilder();
+        $this->responseBuilder = new JsonApiResponseBuilder();
     }
 
     /**
@@ -43,7 +44,10 @@ class FluggFormatClassicExceptionHandler extends ExceptionHandler
                 $exception instanceof ValidationException => $this->renderResponseForValidationException($exception),
                 $exception instanceof HttpException => $this->renderResponseForHttpException($exception->getStatusCode()),
                 $exception instanceof ModelNotFoundException => $this->renderResponseForModelNotFound($exception),
-                default => parent::render($request, $exception)
+                $exception instanceof HttpResponseException => $this->renderResponseForHttpResponseException($exception),
+                $exception instanceof HasSideEffectsException => $this->renderResponseForHasSideEffectsExtendableException($exception),
+                $exception instanceof ExtendableException => $this->renderResponseForExtendableException($exception),
+                default => $this->renderResponseForUnknownException($exception)
             };
         }
 
@@ -213,5 +217,43 @@ class FluggFormatClassicExceptionHandler extends ExceptionHandler
             ),
             $statusCode
         );
+    }
+
+    private function renderResponseForUnknownException(Throwable $e): JsonResponse
+    {
+        $unknownErrorResponseData = config('app.debug')
+            ? $this->convertForDebugEnv($e)
+            : $this->convertForNonDebugEnv($e);
+
+        return response()->json($unknownErrorResponseData, $this->getUnknownErrorStatusCode($e));
+    }
+
+    private function renderResponseForHttpResponseException(HttpResponseException $httpResponseException): Response
+    {
+        return $httpResponseException->getResponse();
+    }
+
+    private function renderResponseForExtendableException(ExtendableException $exception): JsonResponse
+    {
+        return response()->json(
+            $this->makeErrorResponseData(
+                $exception->httpStatusCode(),
+                $exception->httpErrorCode(),
+                $exception->httpErrorMessage()
+            ),
+            $exception->httpStatusCode()
+        );
+    }
+
+    private function renderResponseForHasSideEffectsExtendableException(HasSideEffectsException $exception
+    ): JsonResponse {
+        $response = $this->renderResponseForExtendableException($exception);
+
+        $request = request();
+        foreach ($exception->getSideEffects() as $sideEffect) {
+            $response = $sideEffect($response, $request);
+        }
+
+        return $response;
     }
 }

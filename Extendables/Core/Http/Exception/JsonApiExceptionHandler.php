@@ -3,7 +3,7 @@
 namespace App\Extendables\Core\Http\Exception;
 
 use App\Extendables\Core\Http\Enums\CommonHttpErrorCodeEnum;
-use App\Extendables\Core\Http\Response\FluggFormatResponseBuilder;
+use App\Extendables\Core\Http\Response\JsonApiResponseBuilder;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -19,13 +19,13 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
-class FluggFormatExceptionHandler
+class JsonApiExceptionHandler
 {
-    private readonly FluggFormatResponseBuilder $responseBuilder;
+    private readonly JsonApiResponseBuilder $responseBuilder;
 
     public function __construct()
     {
-        $this->responseBuilder = new FluggFormatResponseBuilder;
+        $this->responseBuilder = new JsonApiResponseBuilder;
     }
 
     public function __invoke(Exceptions $exceptions): void
@@ -43,6 +43,7 @@ class FluggFormatExceptionHandler
                 $exception instanceof HttpException => $this->renderResponseForHttpException($exception->getStatusCode()),
                 $exception instanceof ModelNotFoundException => $this->renderResponseForModelNotFound($exception),
                 $exception instanceof HttpResponseException => $this->renderResponseForHttpResponseException($exception),
+                $exception instanceof HasSideEffectsException => $this->renderResponseForHasSideEffectsExtendableException($exception),
                 $exception instanceof ExtendableException => $this->renderResponseForExtendableException($exception),
                 default => $this->renderResponseForUnknownException($exception)
             };
@@ -205,5 +206,17 @@ class FluggFormatExceptionHandler
             ),
             $exception->httpStatusCode()
         );
+    }
+
+    private function renderResponseForHasSideEffectsExtendableException(HasSideEffectsException $exception): JsonResponse
+    {
+        $response = $this->renderResponseForExtendableException($exception);
+
+        $request = request();
+        foreach ($exception->getSideEffects() as $sideEffect) {
+            $response = $sideEffect($response, $request);
+        }
+
+        return $response;
     }
 }

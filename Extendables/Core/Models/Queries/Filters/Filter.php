@@ -26,6 +26,20 @@ abstract class Filter
     }
 
     /**
+     * The column to filter on: the target column when set, else the filter's field (qualified for Eloquent builders).
+     *
+     * @param  EloquentBuilder|Builder  $builder
+     * @param  FilterCondition  $filterCondition
+     * @return string
+     */
+    protected function resolveColumn(EloquentBuilder|Builder $builder, FilterCondition $filterCondition): string
+    {
+        $column = $this->targetColumn ?: $filterCondition->field;
+
+        return $builder instanceof EloquentBuilder ? $builder->qualifyColumn($column) : $column;
+    }
+
+    /**
      * @param  EloquentBuilder|Builder  $builder
      * @param  FilterCondition  $filterCondition
      * @return Builder|EloquentBuilder

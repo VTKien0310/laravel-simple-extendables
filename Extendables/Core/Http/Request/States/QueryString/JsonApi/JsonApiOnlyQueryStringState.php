@@ -2,7 +2,6 @@
 
 namespace App\Extendables\Core\Http\Request\States\QueryString\JsonApi;
 
-use App\Extendables\Core\Http\Enums\HttpRequestParamEnum;
 use App\Extendables\Core\Http\Request\States\QueryString\OnlyQueryStringState;
 use Illuminate\Http\Request;
 

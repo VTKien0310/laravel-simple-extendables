@@ -2,6 +2,7 @@
 
 namespace App\Extendables\Core\Http\Request\States\QueryString\JsonApi;
 
+use App\Extendables\Core\Http\Constants\HttpRequestParamConstants;
 use App\Extendables\Core\Http\Request\States\QueryString\PaginateQueryStringState;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -29,9 +30,9 @@ class JsonApiPaginateQueryStringState implements PaginateQueryStringState
         int $defaultPageSize = 30
     ) {
         if (! empty($paginateRequestData) && is_array($paginateRequestData) && Arr::isAssoc($paginateRequestData)) {
-            $this->pageNumber = $this->getIntValueFromRequestData($paginateRequestData, 'number', $defaultPageNumber);
-            $this->pageSize = $this->getIntValueFromRequestData($paginateRequestData, 'size', $defaultPageSize);
-            $this->cursor = $this->getStringValueFromRequestData($paginateRequestData, 'cursor', '');
+            $this->pageNumber = $this->getIntValueFromRequestData($paginateRequestData, HttpRequestParamConstants::PAGINATE_NUMBER, $defaultPageNumber);
+            $this->pageSize = $this->getIntValueFromRequestData($paginateRequestData, HttpRequestParamConstants::PAGINATE_SIZE, $defaultPageSize);
+            $this->cursor = $this->getStringValueFromRequestData($paginateRequestData, HttpRequestParamConstants::PAGINATE_CURSOR, '');
         } else {
             $this->pageNumber = $defaultPageNumber;
             $this->pageSize = $defaultPageSize;

@@ -68,8 +68,11 @@ For Laravel < 11, register the library's service provider in `config/app.php`
         - Controllers/: controller templates
         - Enums/: HTTP related enum templates
         - Exception/
-            - Handler.php: customized exception handler
+            - JsonApiExceptionHandler.php: customized exception handler for Laravel >= 11 (`bootstrap/app.php`)
+            - JsonApiClassicExceptionHandler.php: customized exception handler for Laravel < 11 (`app/Exceptions/Handler.php`)
+            - HasSideEffectsException.php: base class for custom exceptions that apply side effects (e.g. headers, cookies) to the rendered response
             - ExtendableException.php: interface for making custom exceptions that can be rendered by the library's ExceptionHandler
+            - InvalidFilterQueryStringException.php: thrown (HTTP 400) when the `filter` query string is malformed, e.g. `filter[field][]=value`
         - Middleware/: middleware templates
         - Request/
             - States/: manage request data and information
@@ -91,11 +94,12 @@ For Laravel < 11, register the library's service provider in `config/app.php`
         - RouteDocumentation/: attributes to document triggering route in controllers
     - Models/
         - Queries/
-            - Filters/: base filter classes
+            - Filters/: base filter classes (exact, partial, created from/to, greater/less than, inclusive/exclusive between `filter[field]=min,max`)
             - Sorts/: base sort classes
             - CountQuery.php: executes count on a query
             - IndexQuery.php: applies filters and sorts to a query based on the query string state
-            - PaginateQuery.php: executes pagination on a query based on the query string state
+            - OffsetPaginateQuery.php: executes offset (page number) pagination on a query based on the query string state
+            - CursorPaginateQuery.php: executes cursor pagination on a query based on the query string state (`page[cursor]`)
         - Traits/: reusable model traits
     - Ports/: external or third party services interaction
         - File/
@@ -153,7 +157,7 @@ handler:
 ```php
 return Application::configure(basePath: dirname(__DIR__))
     ...
-    ->withExceptions(new JsonApiClassicExceptionHandler())
+    ->withExceptions(new JsonApiExceptionHandler())
     ...
     ->create();
 ```

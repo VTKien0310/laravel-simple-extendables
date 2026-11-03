@@ -26,10 +26,10 @@ class JsonApiResponseBuilder implements ResponseBuilder
         $baseResponse = $this->baseSuccessResponse($statusCode);
 
         if ($data instanceof JsonResource) {
-            return $data->additional($baseResponse)->response();
+            return $data->additional($baseResponse)->response()->setStatusCode($statusCode);
         }
 
-        return response()->json(array_merge($baseResponse, ['data' => $data]));
+        return response()->json(array_merge($baseResponse, ['data' => $data]), $statusCode);
     }
 
     /**

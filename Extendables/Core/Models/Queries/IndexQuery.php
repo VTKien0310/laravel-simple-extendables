@@ -2,7 +2,7 @@
 
 namespace App\Extendables\Core\Models\Queries;
 
-use App\Extendables\Core\Http\Enums\HttpRequestParamEnum;
+use App\Extendables\Core\Http\Constants\HttpRequestParamConstants;
 use App\Extendables\Core\Http\Request\States\QueryString\FilterQueryStringState;
 use App\Extendables\Core\Http\Request\States\QueryString\OnlyQueryStringState;
 use App\Extendables\Core\Http\Request\States\QueryString\RelationQueryStringState;
@@ -83,7 +83,7 @@ class IndexQuery
 
     private function applySortPriority(Builder|EloquentBuilder $builder): EloquentBuilder|Builder
     {
-        $sortPriority = request()->query(HttpRequestParamEnum::SORT_PRIORITY->value);
+        $sortPriority = request()->query(HttpRequestParamConstants::SORT_PRIORITY);
         if (
             ! empty($sortPriority)
             && (is_numeric($sortPriority) || Str::isUuid($sortPriority) || Str::isUlid($sortPriority))

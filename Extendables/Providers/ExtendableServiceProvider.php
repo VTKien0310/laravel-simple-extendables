@@ -4,7 +4,7 @@ namespace App\Extendables\Providers;
 
 use App\Extendables\Core\Cache\CacheHelper;
 use App\Extendables\Core\Cache\RedisCacheHelper;
-use App\Extendables\Core\Http\Enums\HttpRequestParamEnum;
+use App\Extendables\Core\Http\Constants\HttpRequestParamConstants;
 use App\Extendables\Core\Http\Request\States\QueryString\FilterQueryStringState;
 use App\Extendables\Core\Http\Request\States\QueryString\JsonApi\JsonApiFilterQueryStringState;
 use App\Extendables\Core\Http\Request\States\QueryString\JsonApi\JsonApiOnlyQueryStringState;
@@ -101,23 +101,23 @@ class ExtendableServiceProvider extends ServiceProvider
         // state binding
         $this->app->scoped(
             RelationQueryStringState::class,
-            fn () => new JsonApiRelationQueryStringState(request()->query(HttpRequestParamEnum::INCLUDE->value))
+            fn () => new JsonApiRelationQueryStringState(request()->query(HttpRequestParamConstants::INCLUDE))
         );
         $this->app->scoped(
             SortQueryStringState::class,
-            fn () => new JsonApiSortQueryStringState(request()->query(HttpRequestParamEnum::SORT->value))
+            fn () => new JsonApiSortQueryStringState(request()->query(HttpRequestParamConstants::SORT))
         );
         $this->app->scoped(
             FilterQueryStringState::class,
-            fn () => new JsonApiFilterQueryStringState(request()->query(HttpRequestParamEnum::FILTER->value))
+            fn () => new JsonApiFilterQueryStringState(request()->query(HttpRequestParamConstants::FILTER))
         );
         $this->app->scoped(
             PaginateQueryStringState::class,
-            fn () => new JsonApiPaginateQueryStringState(request()->query(HttpRequestParamEnum::PAGINATE->value))
+            fn () => new JsonApiPaginateQueryStringState(request()->query(HttpRequestParamConstants::PAGINATE))
         );
         $this->app->scoped(
             OnlyQueryStringState::class,
-            fn () => new JsonApiOnlyQueryStringState(request()->query(HttpRequestParamEnum::ONLY->value))
+            fn () => new JsonApiOnlyQueryStringState(request()->query(HttpRequestParamConstants::ONLY))
         );
 
         // others binding

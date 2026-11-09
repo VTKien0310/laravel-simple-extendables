@@ -93,7 +93,9 @@ class S3FileStoragePort implements FileStoragePort
 
         return $this->disk()->temporaryUrl(
             $path,
-            $duration ?: now()->addMinutes($this->defaultTempUrlDuration),
+            is_int($duration)
+                ? now()->addMinutes($duration)
+                : ($duration ?? now()->addMinutes($this->defaultTempUrlDuration)),
             $options
         );
     }

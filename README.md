@@ -102,7 +102,7 @@ For Laravel < 11, register the library's service provider in `config/app.php`
             - CursorPaginateQuery.php: executes cursor pagination on a query based on the query string state (`page[cursor]`)
         - Traits/: reusable model traits
     - Ports/: external or third party services interaction
-        - File/
+        - File/: `FileStoragePort` with S3, S3 + CloudFront and local disk implementations sharing `FlysystemFileStoragePort`
         - Mail/
         - Notification/
     - Utils/
@@ -132,6 +132,11 @@ by the library:
   assets through CloudFront
 - `filesystems.disks.s3.cloudfront_private_key` to provide the service with the base path to the CloudFront private key
   when serving assets through CloudFront
+- `filesystems.default` (`FILESYSTEM_DISK`) set to `local` makes the service use `LocalFileStoragePort` (Laravel's `local`
+  disk) instead of S3. Notes for the local disk:
+    - temporary URLs require `'serve' => true` on the `local` disk config (default since Laravel 11)
+    - download filename / content type options of `makeDownloadUrlForPath()` are ignored; use `download()` to force an
+      attachment name
 
 ### Exception handler
 

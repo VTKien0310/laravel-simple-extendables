@@ -19,6 +19,7 @@ use App\Extendables\Core\Http\Response\JsonApiResponseBuilder;
 use App\Extendables\Core\Http\Response\ResponseBuilder;
 use App\Extendables\Core\Ports\File\DummyFileStoragePort;
 use App\Extendables\Core\Ports\File\FileStoragePort;
+use App\Extendables\Core\Ports\File\LocalFileStoragePort;
 use App\Extendables\Core\Ports\File\S3FileStoragePort;
 use App\Extendables\Core\Ports\File\S3WithCloudFrontFileStoragePort;
 use App\Extendables\Core\Ports\Mail\DummyMailPort;
@@ -59,6 +60,10 @@ class ExtendableServiceProvider extends ServiceProvider
 
                 $rootDir = config('filesystems.root_dir', '');
                 $defaultTempUrlDuration = config('filesystems.temp_url_duration', 30);
+
+                if (config('filesystems.default') === 'local') {
+                    return new LocalFileStoragePort($rootDir, $defaultTempUrlDuration);
+                }
 
                 $assetUrl = config('filesystems.disks.s3.url');
                 $cloudFrontKeyPairId = config('filesystems.disks.s3.cloudfront_key_pair_id');

@@ -2,6 +2,7 @@
 
 namespace App\Extendables\Core\Http\Response;
 
+use App\Extendables\Core\Utils\BoolIntValueEnum;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,7 +41,7 @@ class JsonApiResponseBuilder implements ResponseBuilder
     {
         return [
             'status' => $statusCode,
-            'success' => true,
+            'success' => BoolIntValueEnum::TRUE->value,
         ];
     }
 
@@ -80,7 +81,7 @@ class JsonApiResponseBuilder implements ResponseBuilder
     {
         return [
             'status' => $statusCode,
-            'success' => false,
+            'success' => BoolIntValueEnum::FALSE->value,
             'error' => [
                 'code' => $errorCode,
                 'message' => $message,

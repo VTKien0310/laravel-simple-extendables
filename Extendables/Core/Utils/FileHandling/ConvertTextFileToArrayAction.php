@@ -5,7 +5,7 @@ namespace App\Extendables\Core\Utils\FileHandling;
 use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
 
-class TextFileToArrayConverter
+class ConvertTextFileToArrayAction
 {
     public function handle(
         UploadedFile|File|string $file,

@@ -2,6 +2,7 @@
 
 namespace App\Extendables\Core\Ports\File;
 
+use App\Extendables\Core\Ports\File\Exceptions\FileStorageException;
 use DateTimeInterface;
 use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
@@ -115,6 +116,8 @@ interface FileStoragePort
      * @param  string|null  $localDirectory  The local directory where the file will be saved. Defaults to the system temp directory if not provided.
      * @param  bool  $isWorkDirPath  Indicates whether the source path is relative to the working directory.
      * @return string The full path of the saved local file.
+     *
+     * @throws FileStorageException When the remote or local stream cannot be opened.
      */
     public function streamFileToLocal(string $path, string $localName, ?string $localDirectory = null, bool $isWorkDirPath = false): string;
 }

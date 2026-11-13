@@ -2,13 +2,13 @@
 
 namespace App\Extendables\Core\Ports\File;
 
+use App\Extendables\Core\Ports\File\Exceptions\FileStorageException;
 use DateTimeInterface;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use RuntimeException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -226,14 +226,14 @@ abstract class FlysystemFileStoragePort implements FileStoragePort
         $remoteStream = $this->disk()->readStream($resolvedPath);
 
         if ($remoteStream === null) {
-            throw new RuntimeException("Unable to open remote stream for file: {$resolvedPath}");
+            throw FileStorageException::unableToOpenRemoteStream($resolvedPath);
         }
 
         $localStream = fopen($localPath, 'w');
 
         if ($localStream === false) {
             fclose($remoteStream);
-            throw new RuntimeException("Unable to open local file for writing: {$localPath}");
+            throw FileStorageException::unableToOpenLocalFile($localPath);
         }
 
         try {

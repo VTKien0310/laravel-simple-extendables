@@ -103,6 +103,7 @@ For Laravel < 11, register the library's service provider in `config/app.php`
         - Traits/: reusable model traits
     - Ports/: external or third party services interaction
         - File/: `FileStoragePort` with S3, S3 + CloudFront and local disk implementations sharing `FlysystemFileStoragePort`
+            - Exceptions/: `FileStorageException` (an `ExtendableException`) thrown by the file storage ports
         - Mail/
         - Notification/
     - Utils/

@@ -52,7 +52,7 @@ trait ConvertBase64ToUploadedFileRequest
      */
     protected function convertMultiBase64ToUploadedFile(array $base64Arr): array
     {
-        $base64Converter = new Base64ToUploadedFileConverter();
+        $base64Converter = new ConvertBase64ToUploadedFileAction();
         $uploadedFiles = [];
         foreach ($base64Arr as $index => $base64) {
             if (!$this->isValidParamValue($base64)) {
@@ -89,7 +89,7 @@ trait ConvertBase64ToUploadedFileRequest
 
         if ($this->isValidParamValue($paramValue)) {
             $this->unsetRequestParam($paramName);
-            $base64Converter = new Base64ToUploadedFileConverter();
+            $base64Converter = new ConvertBase64ToUploadedFileAction();
             $convertedParamValue = $base64Converter->handle(
                 $this->getBase64ContentFromArray($paramValue),
                 $this->getBase64NameFromArray($paramValue)

@@ -4,7 +4,7 @@ namespace App\Extendables\Core\Utils\FileHandling;
 
 use Random\RandomException;
 
-class ArrayToTextFileConverter
+class ConvertArrayToTextFileAction
 {
     /**
      * @throws RandomException

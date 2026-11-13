@@ -4,7 +4,7 @@ namespace App\Extendables\Core\Utils\Base64Handling;
 
 use Illuminate\Http\UploadedFile;
 
-class Base64ToUploadedFileConverter
+class ConvertBase64ToUploadedFileAction
 {
     public function handle(string $base64, string $fileName): UploadedFile
     {

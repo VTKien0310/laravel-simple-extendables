@@ -15,7 +15,8 @@ class RouteInvoker
     ): void {
         $dirName = Str::studly($resource);
 
-        $routeFileName = Str::snake($resource).'-routes.php';
+        // Str::kebab() splits only on uppercase letters, so derive it from the studly name to also split `_` and `-`.
+        $routeFileName = Str::kebab($dirName).'-routes.php';
         if ($fileNamePrefix) {
             $routeFileName = $fileNamePrefix.'-'.$routeFileName;
         }

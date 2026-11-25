@@ -1039,18 +1039,45 @@ An ApiResource turns a model into response fields. It extends `InjectableJsonRes
 may take injected dependencies; `potentiallyMissing()` drops a field that the `only` query string did not request. A
 collection resource only names its item resource.
 
+- Must keep a response's keys independent of server-side state. When there is no data, send the key with `null`, or
+  with an object whose fields are `null`. Do not leave the key out.
+- May leave a key out only in these cases:
+    - The client chose it: the `only` or `include` query string (`potentiallyMissing()`, `whenRelationRequested()`,
+      `mergeWhenRelationRequested()`).
+    - The actor lacks the permission that gates the key: return `PermissionGatedMissingValue`.
+    - The record's state does not meet the display condition of the key's block: return
+      `StatusConditionedMissingValue`.
+- Must not return a bare `MissingValue`. Name every key that can be left out, and why, in the resource's PHPDoc.
+- Should return an array or a collection of items through a `CollectionJsonResource` subclass that names its item
+  resource in `$collects`, rather than mapping each item to an item resource (`->map(fn ($x) => new XResource($x))`).
+  For a per-item argument, use `mapBy()`.
+
 ```php
-/** @mixin Article */
+/**
+ * @mixin Article
+ *
+ * `internal_note` is left out unless the actor may read internal notes; `archive` is left out until the article is
+ * archived.
+ */
 class ArticleResource extends InjectableJsonResource
 {
     /** @return array<string, mixed> */
-    public function handle(): array
+    public function handle(ArticlePolicy $policy): array
     {
         return [
             'id' => $this->id,
             'title' => $this->potentiallyMissing('title', fn () => $this->title),
             'status' => $this->potentiallyMissing('status', fn () => $this->status->value),
             'is_pinned' => $this->potentiallyMissing('is_pinned', fn () => $this->is_pinned->value),
+            // Sent as null until the article is published, never left out.
+            'published_at' => $this->potentiallyMissing('published_at', fn () => $this->published_at),
+            'tags' => $this->potentiallyMissing('tags', fn () => new TagCollectionResource($this->tags)),
+            'internal_note' => $policy->readsInternalNote()
+                ? $this->potentiallyMissing('internal_note', fn () => $this->internal_note)
+                : new PermissionGatedMissingValue,
+            'archive' => $this->status === ArticleStatusEnum::ARCHIVED
+                ? $this->potentiallyMissing('archive', fn () => ['archived_at' => $this->archived_at])
+                : new StatusConditionedMissingValue,
         ];
     }
 }

@@ -279,6 +279,12 @@ readonly class CheckArticleStatusIsPubliclyVisibleAction
         - None of these kinds creates its own main builder; each works on the one it receives.
         - Any other read that executes a builder to answer a question — whether a row exists, a boolean, a single
           model — is an Action: it creates the builder, narrows it with Queries, and executes it.
+        - A Query never reads `config()`, an environment value, or the clock (`now()`, `CarbonImmutable::now()`). The
+          calling Action reads the configuration, reads the clock or receives it from its own caller (a job, a
+          command, or another Action), and passes the resulting values, such as a cutoff instant, as `handle()`
+          arguments. The Query's result then depends only on its arguments.
+        - Filters and Sorts are query modifiers, not Queries: they may read `config()` or the clock themselves, and
+          pass the values to any Query they call as `handle()` arguments.
     - Row locks are Commands, not Queries: a class whose job is to take a row lock (`lockForUpdate()`,
       `sharedLock()`) and return the locked row is a Command named `Lock…Command`. The lock changes database state
       until the surrounding transaction ends, so it is not a pure read. It runs inside the caller's transaction and
@@ -309,6 +315,25 @@ readonly class GetPublishedArticleQuery
 // The caller owns the builder and executes it.
 $articles = $getPublishedArticleQuery->handle(Article::query())->get();
 ```
+
+A Query receives configuration and time as arguments:
+
+```php
+readonly class StaleArticleDraftQuery
+{
+    public function handle(EloquentBuilder $builder, CarbonImmutable $staleBefore): EloquentBuilder
+    {
+        return $builder
+            ->where(Article::qualifiedColumn(Article::STATUS), ArticleStatusEnum::DRAFT)
+            ->where(Article::qualifiedColumn(Article::UPDATED_AT), '<=', $staleBefore);
+    }
+}
+
+// The calling Action reads the configuration, and reads the clock or receives it from its caller.
+$staleBefore = CarbonImmutable::now()->subDays((int) config('article.draft_retention_days'));
+$drafts = $staleArticleDraftQuery->handle(Article::query(), $staleBefore)->get();
+```
+
 
 Count Query examples, one per option:
 
@@ -880,7 +905,8 @@ readonly class IndexArticleQuery
 }
 ```
 
-A filter in `Queries/Filters/` handles one `filter[field]=...` condition.
+A filter in `Queries/Filters/` handles one `filter[field]=...` condition. A filter or a sort may read `config()` or the
+clock itself; a Query it calls receives those values as `handle()` arguments.
 
 ```php
 class ArticleStatusFilter extends Filter
@@ -1051,6 +1077,9 @@ collection resource only names its item resource.
 - Should return an array or a collection of items through a `CollectionJsonResource` subclass that names its item
   resource in `$collects`, rather than mapping each item to an item resource (`->map(fn ($x) => new XResource($x))`).
   For a per-item argument, use `mapBy()`.
+- Must not call `resolve()` on another resource. To use another resource's data, nest the resource as a value
+  (Laravel resolves it when the response is serialized), call its `handle()`, or extend it and spread
+  `parent::handle()`; when extending, pass any extra per-item value through the subclass's constructor.
 
 ```php
 /**
